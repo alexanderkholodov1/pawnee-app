@@ -10,6 +10,19 @@ export type EstadoInvestigacion = "activa" | "en_investigacion" | "descartada";
 export const TIPOS_CRIATURA: TipoCriatura[] = ["mitica", "elemental", "mecanica", "espectral"];
 export const ESTADOS_INVESTIGACION: EstadoInvestigacion[] = ["activa", "en_investigacion", "descartada"];
 
+export const ETIQUETA_TIPO: Record<TipoCriatura, string> = {
+  mitica: "Mítica",
+  elemental: "Elemental",
+  mecanica: "Mecánica",
+  espectral: "Espectral",
+};
+
+export const ETIQUETA_ESTADO: Record<EstadoInvestigacion, string> = {
+  activa: "Activa",
+  en_investigacion: "En investigación",
+  descartada: "Descartada",
+};
+
 export interface Criatura {
   _id: string;
   nombre: string;

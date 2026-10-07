@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { eliminarCriatura, obtenerCriaturaPorId } from "../api/criaturasApi";
 import { obtenerAvistamientosDeCriatura } from "../api/avistamientosApi";
-import { Criatura } from "../tipos";
+import { Criatura, ETIQUETA_ESTADO, ETIQUETA_TIPO } from "../tipos";
 
 // El backend anida los avistamientos bajo /criaturas/:id/avistamientos
 // SIN populate (ver criaturas.controller.ts de la Semana 6) — por eso aquí
@@ -55,51 +55,71 @@ export function DetalleCriatura() {
     }
   }
 
-  if (cargando) return <p>Cargando...</p>;
-  if (error) return <p>Error: {error}</p>;
-  if (!criatura) return <p>No se encontró la criatura.</p>;
+  if (cargando) return <p className="aviso">Cargando...</p>;
+  if (error) return <p className="error">Error: {error}</p>;
+  if (!criatura) return <p className="vacio">No se encontró la criatura.</p>;
 
   return (
-    <div>
-      <p>
-        <Link to="/">Volver a la lista</Link>
-      </p>
+    <section>
+      <Link className="volver" to="/">
+        Volver a la lista
+      </Link>
 
-      <h1>{criatura.nombre}</h1>
+      <header className="pagina-encabezado">
+        <div>
+          <p className="kicker">Ficha de criatura</p>
+          <h1>{criatura.nombre}</h1>
+        </div>
+        <div className="acciones">
+          <Link className="boton secundario" to={`/criaturas/${criatura._id}/editar`}>
+            Editar
+          </Link>
+          <button type="button" className="eliminar" onClick={manejarEliminar}>
+            Eliminar
+          </button>
+        </div>
+      </header>
 
-      <ul>
-        <li>Tipo: {criatura.tipo}</li>
-        <li>Nivel de peligro: {criatura.nivelPeligro}</li>
-        <li>Estado: {criatura.estado}</li>
-        <li>Habilidades: {criatura.habilidades.join(", ") || "(ninguna registrada)"}</li>
+      <ul className="ficha">
+        <li>
+          <span>Tipo</span>
+          {ETIQUETA_TIPO[criatura.tipo]}
+        </li>
+        <li>
+          <span>Nivel de peligro</span>
+          {criatura.nivelPeligro}/10
+        </li>
+        <li>
+          <span>Estado</span>
+          {ETIQUETA_ESTADO[criatura.estado]}
+        </li>
+        <li>
+          <span>Habilidades</span>
+          {criatura.habilidades.join(", ") || "Ninguna registrada"}
+        </li>
       </ul>
 
-      <p>
-        <Link to={`/criaturas/${criatura._id}/editar`}>Editar</Link>
-        {" | "}
-        <button type="button" onClick={manejarEliminar}>
-          Eliminar
-        </button>
-      </p>
+      <div className="panel">
+        <header className="pagina-encabezado">
+          <h2>Avistamientos</h2>
+          <Link className="boton" to={`/avistamientos/nuevo?criaturaId=${criatura._id}`}>
+            Registrar avistamiento
+          </Link>
+        </header>
 
-      <h2>Avistamientos registrados</h2>
-
-      <p>
-        <Link to={`/avistamientos/nuevo?criaturaId=${criatura._id}`}>Registrar un avistamiento de esta criatura</Link>
-      </p>
-
-      {avistamientos.length === 0 ? (
-        <p>Todavía no hay avistamientos registrados para esta criatura.</p>
-      ) : (
-        <ul>
-          {avistamientos.map((avistamiento) => (
-            <li key={avistamiento._id}>
-              {avistamiento.fecha.slice(0, 10)} — {avistamiento.testigo} en {avistamiento.ubicacion}
-              {avistamiento.descripcion ? ` (${avistamiento.descripcion})` : ""}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+        {avistamientos.length === 0 ? (
+          <p className="vacio">Todavía no hay avistamientos registrados para esta criatura.</p>
+        ) : (
+          <ul className="lista">
+            {avistamientos.map((avistamiento) => (
+              <li key={avistamiento._id}>
+                <strong>{avistamiento.fecha.slice(0, 10)}</strong> — {avistamiento.testigo} en {avistamiento.ubicacion}
+                {avistamiento.descripcion ? ` (${avistamiento.descripcion})` : ""}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
   );
 }

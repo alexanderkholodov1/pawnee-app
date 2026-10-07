@@ -39,21 +39,26 @@ export function ListaAvistamientos() {
   }
 
   return (
-    <div>
-      <h1>Avistamientos registrados</h1>
+    <section>
+      <header className="pagina-encabezado">
+        <div>
+          <p className="kicker">Bitácora</p>
+          <h1>Avistamientos registrados</h1>
+          <p className="bajada">Testigos, lugares y fechas de cada encuentro reportado.</p>
+        </div>
+        <Link className="boton" to="/avistamientos/nuevo">
+          Registrar avistamiento
+        </Link>
+      </header>
 
-      <p>
-        <Link to="/">Volver a criaturas</Link>
-        {" · "}
-        <Link to="/avistamientos/nuevo">Registrar avistamiento nuevo</Link>
-      </p>
-
-      {cargando && <p>Cargando avistamientos...</p>}
-      {!cargando && error && <p>Error: {error}</p>}
-      {!cargando && !error && avistamientos.length === 0 && <p>Todavía no hay avistamientos registrados.</p>}
+      {cargando && <p className="aviso">Cargando avistamientos...</p>}
+      {!cargando && error && <p className="error">Error: {error}</p>}
+      {!cargando && !error && avistamientos.length === 0 && (
+        <p className="vacio">Todavía no hay avistamientos registrados.</p>
+      )}
 
       {!cargando && !error && avistamientos.length > 0 && (
-        <table border={1} cellPadding={6}>
+        <table className="tabla">
           <thead>
             <tr>
               <th>Fecha</th>
@@ -73,7 +78,7 @@ export function ListaAvistamientos() {
                 <td>{avistamiento.testigo}</td>
                 <td>{avistamiento.ubicacion}</td>
                 <td>
-                  <button type="button" onClick={() => manejarEliminar(avistamiento._id)}>
+                  <button type="button" className="eliminar" onClick={() => manejarEliminar(avistamiento._id)}>
                     Eliminar
                   </button>
                 </td>
@@ -82,6 +87,6 @@ export function ListaAvistamientos() {
           </tbody>
         </table>
       )}
-    </div>
+    </section>
   );
 }

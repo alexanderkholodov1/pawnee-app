@@ -6,7 +6,7 @@
  */
 
 import { FormEvent, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { crearAvistamiento } from "../api/avistamientosApi";
 import { obtenerCriaturas } from "../api/criaturasApi";
 import { AvistamientoFormulario, Criatura } from "../tipos";
@@ -65,81 +65,86 @@ export function FormularioAvistamiento() {
     }
   }
 
-  if (cargando) return <p>Cargando formulario...</p>;
+  if (cargando) return <p className="aviso">Cargando formulario...</p>;
 
   return (
-    <div>
-      <h1>Registrar avistamiento</h1>
+    <section>
+      <Link className="volver" to="/avistamientos">
+        Volver a avistamientos
+      </Link>
+      <div className="formulario">
+        <p className="kicker">Nuevo reporte</p>
+        <h1>Registrar avistamiento</h1>
 
-      {error && <p>Error: {error}</p>}
+        {error && <p className="error">Error: {error}</p>}
 
-      <form onSubmit={manejarEnvio}>
-        <p>
-          <label htmlFor="criatura">Criatura: </label>
-          <br />
-          <select
-            id="criatura"
-            value={form.criatura}
-            onChange={(e) => setForm({ ...form, criatura: e.target.value })}
-          >
-            {criaturas.map((criatura) => (
-              <option key={criatura._id} value={criatura._id}>
-                {criatura.nombre}
-              </option>
-            ))}
-          </select>
-        </p>
+        {criaturas.length === 0 && (
+          <p className="vacio">Primero registra una criatura para poder reportar un avistamiento.</p>
+        )}
 
-        <p>
-          <label htmlFor="testigo">Testigo: </label>
-          <br />
-          <input
-            id="testigo"
-            type="text"
-            value={form.testigo}
-            onChange={(e) => setForm({ ...form, testigo: e.target.value })}
-          />
-        </p>
+        <form onSubmit={manejarEnvio}>
+          <label className="campo">
+            <span>Criatura</span>
+            <select
+              id="criatura"
+              value={form.criatura}
+              onChange={(e) => setForm({ ...form, criatura: e.target.value })}
+            >
+              {criaturas.map((criatura) => (
+                <option key={criatura._id} value={criatura._id}>
+                  {criatura.nombre}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        <p>
-          <label htmlFor="ubicacion">Ubicación: </label>
-          <br />
-          <input
-            id="ubicacion"
-            type="text"
-            value={form.ubicacion}
-            onChange={(e) => setForm({ ...form, ubicacion: e.target.value })}
-          />
-        </p>
+          <label className="campo">
+            <span>Testigo</span>
+            <input
+              id="testigo"
+              type="text"
+              value={form.testigo}
+              onChange={(e) => setForm({ ...form, testigo: e.target.value })}
+            />
+          </label>
 
-        <p>
-          <label htmlFor="fecha">Fecha: </label>
-          <br />
-          <input
-            id="fecha"
-            type="date"
-            value={form.fecha}
-            onChange={(e) => setForm({ ...form, fecha: e.target.value })}
-          />
-        </p>
+          <label className="campo">
+            <span>Ubicación</span>
+            <input
+              id="ubicacion"
+              type="text"
+              value={form.ubicacion}
+              onChange={(e) => setForm({ ...form, ubicacion: e.target.value })}
+            />
+          </label>
 
-        <p>
-          <label htmlFor="descripcion">Descripción (opcional): </label>
-          <br />
-          <input
-            id="descripcion"
-            type="text"
-            value={form.descripcion}
-            onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-          />
-        </p>
+          <label className="campo">
+            <span>Fecha</span>
+            <input
+              id="fecha"
+              type="date"
+              value={form.fecha}
+              onChange={(e) => setForm({ ...form, fecha: e.target.value })}
+            />
+          </label>
 
-        <p>
-          <button type="submit" disabled={guardando}>
-            {guardando ? "Guardando..." : "Registrar avistamiento"}
-          </button>
-        </p>
-      </form>
-    </div>
+          <label className="campo">
+            <span>Descripción (opcional)</span>
+            <input
+              id="descripcion"
+              type="text"
+              value={form.descripcion}
+              onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
+            />
+          </label>
+
+          <p>
+            <button type="submit" disabled={guardando || criaturas.length === 0}>
+              {guardando ? "Guardando..." : "Registrar avistamiento"}
+            </button>
+          </p>
+        </form>
+      </div>
+    </section>
   );
 }

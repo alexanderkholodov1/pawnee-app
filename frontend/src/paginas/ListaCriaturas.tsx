@@ -1,15 +1,14 @@
 /**
  * paginas/ListaCriaturas.tsx
  * ------------------------------
- * Página de solo lectura: lista todas las criaturas en una <table> de
- * HTML plano, sin ninguna clase de CSS. Maneja los 3 estados: loading,
- * error y empty.
+ * Página de solo lectura: lista todas las criaturas.
+ * Maneja los 3 estados: loading, error y empty.
  */
 
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { obtenerCriaturas } from "../api/criaturasApi";
-import { Criatura, TipoCriatura, TIPOS_CRIATURA } from "../tipos";
+import { Criatura, ETIQUETA_ESTADO, ETIQUETA_TIPO, TipoCriatura, TIPOS_CRIATURA } from "../tipos";
 
 export function ListaCriaturas() {
   const [criaturas, setCriaturas] = useState<Criatura[]>([]);
@@ -30,61 +29,67 @@ export function ListaCriaturas() {
   }, [filtroTipo]);
 
   return (
-    <div>
-      <h1>Criaturas de Pawnee</h1>
+    <section>
+      <header className="pagina-encabezado">
+        <div>
+          <p className="kicker">Archivo de campo</p>
+          <h1>Criaturas de Pawnee</h1>
+          <p className="bajada">Especies bajo vigilancia del departamento. Filtra por tipo o abre una ficha.</p>
+        </div>
+        <Link className="boton" to="/criaturas/nueva">
+          Registrar criatura
+        </Link>
+      </header>
 
-      <p>
-        <Link to="/criaturas/nueva">Registrar criatura nueva</Link>
-        {" · "}
-        <Link to="/avistamientos">Ver avistamientos</Link>
-      </p>
+      <div className="barra">
+        <label htmlFor="filtro-tipo">Filtrar por tipo</label>
+        <select
+          id="filtro-tipo"
+          value={filtroTipo}
+          onChange={(evento) => setFiltroTipo(evento.target.value as TipoCriatura | "")}
+        >
+          <option value="">Todos los tipos</option>
+          {TIPOS_CRIATURA.map((tipo) => (
+            <option key={tipo} value={tipo}>
+              {ETIQUETA_TIPO[tipo]}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <label htmlFor="filtro-tipo">Filtrar por tipo: </label>
-      <select
-        id="filtro-tipo"
-        value={filtroTipo}
-        onChange={(evento) => setFiltroTipo(evento.target.value as TipoCriatura | "")}
-      >
-        <option value="">Todos los tipos</option>
-        {TIPOS_CRIATURA.map((tipo) => (
-          <option key={tipo} value={tipo}>
-            {tipo}
-          </option>
-        ))}
-      </select>
-
-      {cargando && <p>Cargando criaturas...</p>}
-      {!cargando && error && <p>Ocurrió un error: {error}</p>}
-      {!cargando && !error && criaturas.length === 0 && <p>Todavía no hay criaturas registradas.</p>}
+      {cargando && <p className="aviso">Cargando criaturas...</p>}
+      {!cargando && error && <p className="error">Ocurrió un error: {error}</p>}
+      {!cargando && !error && criaturas.length === 0 && (
+        <p className="vacio">Todavía no hay criaturas registradas.</p>
+      )}
 
       {!cargando && !error && criaturas.length > 0 && (
-        <table border={1} cellPadding={6}>
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Tipo</th>
-              <th>Nivel de peligro</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {criaturas.map((criatura) => (
-              <tr key={criatura._id}>
-                <td>{criatura.nombre}</td>
-                <td>{criatura.tipo}</td>
-                <td>{criatura.nivelPeligro}</td>
-                <td>{criatura.estado}</td>
-                <td>
-                  <Link to={`/criaturas/${criatura._id}`}>Ver</Link>
-                  {" | "}
-                  <Link to={`/criaturas/${criatura._id}/editar`}>Editar</Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="rejilla">
+          {criaturas.map((criatura) => (
+            <article className="tarjeta" key={criatura._id}>
+              <div className="meta">
+                <span className={`insignia ${criatura.tipo}`}>{ETIQUETA_TIPO[criatura.tipo]}</span>
+                <span className={`insignia ${criatura.estado}`}>{ETIQUETA_ESTADO[criatura.estado]}</span>
+              </div>
+              <h2>{criatura.nombre}</h2>
+              <div>
+                <div className="peligro" aria-hidden="true">
+                  <span style={{ width: `${criatura.nivelPeligro * 10}%` }} />
+                </div>
+                <p className="peligro-texto">Peligro {criatura.nivelPeligro}/10</p>
+              </div>
+              <div className="acciones">
+                <Link className="boton" to={`/criaturas/${criatura._id}`}>
+                  Ver ficha
+                </Link>
+                <Link className="boton secundario" to={`/criaturas/${criatura._id}/editar`}>
+                  Editar
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
       )}
-    </div>
+    </section>
   );
 }
